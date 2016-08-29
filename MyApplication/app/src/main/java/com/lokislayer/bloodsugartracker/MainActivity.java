@@ -1,5 +1,6 @@
 package com.lokislayer.bloodsugartracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -45,7 +46,10 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+        //I NEED TO CHECK IF THE DB WAS PURGED BECAUSE ALL VALUES WILL BE WIPED CLEAN
         if (id == R.id.action_settings) {
+            Intent it = new Intent(this,SettingsActivity.class);
+            startActivity(it);
             return true;
         }
 

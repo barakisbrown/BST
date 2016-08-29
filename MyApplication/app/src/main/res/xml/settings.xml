@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <PreferenceCategory android:title="@string/app_settings">
+            <Preference
+                android:title="@string/purge_database"
+                android:key="purgeDB"
+                android:summary="@string/purge_summary" />
+        </PreferenceCategory>
+        <PreferenceCategory android:title="@string/ui_changes">
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="change24time"
+                android:summary="@string/summary_24_hours"
+                android:title="@string/_24hr_time">
+            </CheckBoxPreference>
+        </PreferenceCategory>
+
+</PreferenceScreen>
