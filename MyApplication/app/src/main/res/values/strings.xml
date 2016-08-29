@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Blood Sugar Tracker</string>
+    <string name="action_settings">Settings</string>
+    <string name="min">MIN</string>
+    <string name="max">MAX</string>
+    <string name="avg">AVG</string>
+    <string name="title">Blood Sugar Reading</string>
+    <string name="amount">Amount</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="submitBtn">Submit</string>
+    <string name="date_btn_text">SELECT DATE</string>
+    <string name="time_btn_text">SELECT TIME</string>
+</resources>
