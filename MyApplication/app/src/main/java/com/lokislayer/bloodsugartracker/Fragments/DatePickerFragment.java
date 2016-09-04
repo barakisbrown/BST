@@ -12,6 +12,7 @@ import java.util.Locale;
 
 /**
  * Created by Matthew on 9/4/2016.
+ * Fragment to show DatePickerFragment to the device
  */
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener
 {
