@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 /**
  * Created by Matthew on 8/29/2016.
+ * This fragment will allow me to purge the database and allow the ui to change the default
+ * behavior how the time is displayed.
  */
 public class SettingPreferenceFragment extends PreferenceFragment
 {
@@ -19,6 +21,9 @@ public class SettingPreferenceFragment extends PreferenceFragment
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings);
 
+        /**
+         * NOTE: The following anonymous inner class will purge the existing data.
+         */
         final Preference purgePreference = findPreference(KEY);
         purgePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -33,6 +38,10 @@ public class SettingPreferenceFragment extends PreferenceFragment
             }
         });
 
+        /**
+         * The following code segment will allow the program to display time in normal time such
+         * as 4:21 PM or it will revert it back to military time.
+         */
         final CheckBoxPreference timePreference = (CheckBoxPreference)findPreference(KEY_1);
         timePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
