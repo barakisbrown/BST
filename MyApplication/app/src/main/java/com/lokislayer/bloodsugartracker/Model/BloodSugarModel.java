@@ -5,7 +5,7 @@ package com.lokislayer.bloodsugartracker.Model;
  * The underlying model for the application which stores all information about a blood sugar
  * reading
  */
-public class BloogSugarModel {
+public class BloodSugarModel {
     public static final String ID = "id";
     public static final String DATE_TESTED = "date_tested";
     public static final String TIME_TESTED = "time_tested";
