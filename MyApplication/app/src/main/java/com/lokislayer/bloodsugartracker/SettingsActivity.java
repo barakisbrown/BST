@@ -1,15 +1,14 @@
 package com.lokislayer.bloodsugartracker;
 
-import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.widget.Toast;
 
+/**
+ * Activity Class that will create the SettingsFragment that I will use to power my settings.
+ * All functionality will be in the settings fragment class.
+ */
 public class SettingsActivity extends PreferenceActivity
 {
-    private static final String KEY = "purgeDB";
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
