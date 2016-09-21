@@ -15,6 +15,8 @@ public class SettingPreferenceFragment extends PreferenceFragment
 {
     private static final String KEY = "purgeDB";
     private static final String KEY_1 = "change24time";
+    private static final String KEY_2 = "aboutBST";
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -63,5 +65,20 @@ public class SettingPreferenceFragment extends PreferenceFragment
             }
         });
 
+        /**
+         * Code segment is for showing a simple popup that will show the version via a toast !FOR NOW!
+        */
+        final Preference aboutPreference = findPreference(KEY_2);
+        aboutPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference)
+            {
+                if (preference.getKey().equals(KEY_2))
+                {
+                    Toast.makeText(getActivity(),"VERSION 1.0",Toast.LENGTH_LONG).show();
+                }
+                return false;
+            }
+        });
     }
 }
