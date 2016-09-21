@@ -80,4 +80,6 @@
     <string name="summary_24_hours">Switch between 24hr and normal time</string>
     <string name="bst_preferences">Preferences</string>
     <string name="bst_app_summary">Change App Settings</string>
+    <string name="app_about_settings">Preference category</string>
+    <string name="app_about_summary">More Information about this app</string>
 </resources>
