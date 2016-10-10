@@ -22,7 +22,7 @@ import com.lokislayer.bloodsugartracker.Fragments.TimePickerFragment;
 import com.lokislayer.bloodsugartracker.Model.BloodSugarModel;
 
 public class MainActivity extends AppCompatActivity implements
-        View.OnClickListener,DatePickerFragment.DataReturnedListener, TimePickerFragment.TimeEnteredListener
+        View.OnClickListener,DatePickerFragment.DataReturnedListener, TimePickerFragment.TimeEnteredListener, SettingPreferenceFragment.NoticeDialogListener
 {
     private String dateStr,timeStr;
     private TextView minText;
@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements
     private DatabaseHelper db;
     private BloodSugarModel model;
     private int amountBlood;
+    private boolean isPurged = false;
 
     // NEED THESE TWO FRAGMENTS SO THAT I CAN ACCESS THEM THROUGHOUT THE APP
     DatePickerFragment dateFragment;
@@ -97,6 +98,12 @@ public class MainActivity extends AppCompatActivity implements
         if (id == R.id.action_settings) {
             Intent it = new Intent(this,SettingsActivity.class);
             startActivity(it);
+
+            // CHECKED FOR PURGED DB HERE
+            if (isPurged)
+            {
+                LoadOrUpdateValues();
+            }
             return true;
         }
 
@@ -208,5 +215,11 @@ public class MainActivity extends AppCompatActivity implements
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void onPurge(boolean isPurged)
+    {
+        this.isPurged = isPurged;
     }
 }
