@@ -1,10 +1,14 @@
 package com.lokislayer.bloodsugartracker;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.widget.Toast;
+
+import com.lokislayer.bloodsugartracker.DB.DatabaseHelper;
 
 /**
  * Created by Matthew on 8/29/2016.
@@ -13,6 +17,10 @@ import android.widget.Toast;
  */
 public class SettingPreferenceFragment extends PreferenceFragment
 {
+    public interface NoticeDialogListener {
+        public void onPurge(boolean isPurged);
+    }
+
     private static final String KEY = "purgeDB";
     private static final String KEY_1 = "change24time";
     private static final String KEY_2 = "aboutBST";
@@ -33,7 +41,30 @@ public class SettingPreferenceFragment extends PreferenceFragment
             {
                 if (preference.getKey().equals(KEY))
                 {
-                    Toast.makeText(getActivity(),"HELLO WORLD",Toast.LENGTH_LONG).show();
+                    // Instantiate a AlertBuilder to let the user know of this action
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                    builder.setMessage(R.string.purge_db_warning);
+                    builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            DatabaseHelper db = DatabaseHelper.getInstance(getActivity());
+                            db.purgeDB();
+                            NoticeDialogListener activity = (NoticeDialogListener)getActivity();
+                            activity.onPurge(true);
+                        }
+                    });
+
+                    builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            NoticeDialogListener activity = (NoticeDialogListener)getActivity();
+                            activity.onPurge(false);
+                        }
+                    });
+
+                    AlertDialog dialog = builder.create();
 
                 }
                 return false;
