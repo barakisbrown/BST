@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
 
         // INITIALIZE DB FIELD
-        db = new DatabaseHelper(this);
+        db = DatabaseHelper.getInstance(this);
         LoadOrUpdateValues();
 
         // BUTTONS THAT NEED BE INITIATED AND BOUND TO THE CLICK LISTENER
