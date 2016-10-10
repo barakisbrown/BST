@@ -6,11 +6,6 @@ package com.lokislayer.bloodsugartracker.Model;
  * reading
  */
 public class BloodSugarModel {
-    public static final String ID = "id";
-    public static final String DATE_TESTED = "date_tested";
-    public static final String TIME_TESTED = "time_tested";
-    public static final String AMOUNT = "amount";
-
     private String _dateTested;
     private String _timeTested;
     private int _amount;
