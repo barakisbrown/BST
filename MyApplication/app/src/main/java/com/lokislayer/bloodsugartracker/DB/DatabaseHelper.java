@@ -1,8 +1,8 @@
 package com.lokislayer.bloodsugartracker.DB;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -18,90 +18,108 @@ import java.util.List;
  */
 public class DatabaseHelper extends SQLiteOpenHelper
 {
-    public static final String DB_NAME = "BSResultsDB";
-    public static final String TABLE_NAME = "TestResults";
-    public static final String COLUMN_ID = "id";
-    public static final int DB_VERSION=1;
+    private static final String DB_NAME = "BSResultsDB";
+    private static final String TABLE_NAME = "TestResults";
+    private static final String ID = "id";
+    private static final String DATE_TESTED = "date_tested";
+    private static final String TIME_TESTED = "time_tested";
+    private static final String AMOUNT = "amount";
+
+    private static final int DB_VERSION=1;
 
     private BloodSugarModel model;
     private List<BloodSugarModel> results = new ArrayList<>();
+
     private int totalBloodSugarAmount;
     private int minBloodSugarAmount;
     private int maxBloodSugarAmount;
     private int avgBloodSugarAmount;
 
-    public DatabaseHelper(Context context)
+    private static DatabaseHelper sInstance;
+
+    public static synchronized DatabaseHelper getInstance(Context context)
     {
-        super(context,DB_NAME,null,DB_VERSION);
+        // I WILL BE USED THE APPLICATION CONTEXT SO THAT I DO NOT
+        // LEAK the Activity Context
+        if (sInstance == null)
+        {
+            sInstance = new DatabaseHelper(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
+    private DatabaseHelper(Context context)
+    {
+        super(context, DB_NAME, null, DB_VERSION);
         model = new BloodSugarModel();
         totalBloodSugarAmount = 0;
         minBloodSugarAmount = 0;
         maxBloodSugarAmount = 0;
         avgBloodSugarAmount = 0;
-        loadResults();
+        results = getAllResults();
     }
-
 
     @Override
     public void onCreate(SQLiteDatabase db)
     {
         String sql = "CREATE TABLE " +TABLE_NAME
-                +"(" + BloodSugarModel.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                +BloodSugarModel.DATE_TESTED + " VARCHAR, "
-                +BloodSugarModel.TIME_TESTED + " VARCHAR, "
-                +BloodSugarModel.AMOUNT + " INTEGER);";
+                +"(" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + DATE_TESTED + " VARCHAR, "
+                + TIME_TESTED + " VARCHAR, "
+                + AMOUNT + " INTEGER);";
         db.execSQL(sql);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int o, int n)
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
-        String sql = "DROP TABLE IF EXISTS " + TABLE_NAME;
-        db.execSQL(sql);
-        onCreate(db);
+        if (oldVersion == newVersion)
+        {
+            String sql = "DROP TABLE IF EXISTS " + TABLE_NAME;
+            db.execSQL(sql);
+            onCreate(db);
+        }
     }
 
-    private boolean doesDbExist()
+    private boolean dbExist()
     {
         SQLiteDatabase db = getReadableDatabase();
-        if (db == null)
-        {
-            db.close();
-            return false;
-        }
-        else
-        {
-            db.close();
-            return true;
-        }
+        boolean exist;
 
+        exist = (db == null) ? false : true;
+        db.close();
+        return exist;
     }
 
-    private void loadResults()
+    public List<BloodSugarModel> getAllResults()
     {
-        if (doesDbExist())
+        List<BloodSugarModel> results = new ArrayList<>();
+
+        if (dbExist())
         {
             SQLiteDatabase db = getReadableDatabase();
             String sql = "SELECT * FROM " + TABLE_NAME;
             Cursor c = db.rawQuery(sql,null);
 
-            if (c.getCount() == 0) { return; }
+            if (c.getCount() == 0) { return null; }
             c.moveToFirst();
             do
             {
-                String date = c.getString(c.getColumnIndex(BloodSugarModel.DATE_TESTED));
-                String time = c.getString(c.getColumnIndex(BloodSugarModel.TIME_TESTED));
-                int amt = c.getInt(c.getColumnIndex(BloodSugarModel.AMOUNT));
+                String date = c.getString(c.getColumnIndex(DATE_TESTED));
+                String time = c.getString(c.getColumnIndex(TIME_TESTED));
+                int amt = c.getInt(c.getColumnIndex(AMOUNT));
+
                 totalBloodSugarAmount += amt;
                 if (minBloodSugarAmount == 0 && (maxBloodSugarAmount == 0))
                 {
-                    minBloodSugarAmount = maxBloodSugarAmount = amt;
+                    minBloodSugarAmount = maxBloodSugarAmount = 0;
                 }
                 if (amt > maxBloodSugarAmount)
                     maxBloodSugarAmount = amt;
                 if (amt < minBloodSugarAmount)
                     minBloodSugarAmount = amt;
-                BloodSugarModel model = new BloodSugarModel();
+
+                model = new BloodSugarModel();
                 model.setAmount(amt);
                 model.setDateTested(date);
                 model.setTimeTested(time);
@@ -110,6 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             avgBloodSugarAmount = totalBloodSugarAmount / results.size();
             db.close();
         }
+        return results;
     }
 
     public boolean addTestResults(BloodSugarModel model)
@@ -117,9 +136,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(BloodSugarModel.DATE_TESTED,model.getTimeTested().toString());
-        values.put(BloodSugarModel.TIME_TESTED,model.getTimeTested().toString());
-        values.put(BloodSugarModel.AMOUNT, model.getAmount());
+        values.put(DATE_TESTED, model.getTimeTested());
+        values.put(TIME_TESTED, model.getTimeTested());
+        values.put(AMOUNT, model.getAmount());
         results.add(model);
 
         db.insert(TABLE_NAME,null,values);
@@ -143,23 +162,23 @@ public class DatabaseHelper extends SQLiteOpenHelper
         return true;
     }
 
-    public int getMaxAmount()
+    public void purgeDB()
     {
-        return maxBloodSugarAmount;
+        SQLiteDatabase db = getWritableDatabase();
+        onUpgrade(db,DB_VERSION,DB_VERSION);
+
+        // Since I am keeping List<BloodSugarModel> synced internally
+        for (BloodSugarModel model : results)
+        {
+            results.remove(model);
+        }
+
+        maxBloodSugarAmount = minBloodSugarAmount = totalBloodSugarAmount = 0;
     }
 
-    public int getMinAmount()
-    {
-        return minBloodSugarAmount;
-    }
-
+    public int getMaxAmount() { return maxBloodSugarAmount; }
+    public int getMinAmount() { return minBloodSugarAmount; }
     public int getAvgAmount() { return avgBloodSugarAmount; }
-
     public int getTotalBloodSugarAmount() { return totalBloodSugarAmount; }
-
-    public List<BloodSugarModel> getAllResults()
-    {
-        return results;
-    }
-
+    public int getResultCount() { return results.size(); }
 }
