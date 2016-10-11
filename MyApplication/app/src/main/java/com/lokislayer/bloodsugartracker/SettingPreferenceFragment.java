@@ -65,7 +65,7 @@ public class SettingPreferenceFragment extends PreferenceFragment
                     });
 
                     AlertDialog dialog = builder.create();
-
+                    dialog.show();
                 }
                 return false;
             }
