@@ -2,6 +2,7 @@ package com.lokislayer.bloodsugartracker;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -98,13 +99,6 @@ public class MainActivity extends AppCompatActivity implements
         if (id == R.id.action_settings) {
             Intent it = new Intent(this,SettingsActivity.class);
             startActivity(it);
-
-            // CHECKED FOR PURGED DB HERE
-            if (isPurged)
-            {
-                LoadOrUpdateValues();
-            }
-            return true;
         }
 
         return super.onOptionsItemSelected(item);

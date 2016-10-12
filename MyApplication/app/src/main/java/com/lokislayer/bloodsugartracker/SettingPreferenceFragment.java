@@ -1,7 +1,9 @@
 package com.lokislayer.bloodsugartracker;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -15,8 +17,47 @@ import com.lokislayer.bloodsugartracker.DB.DatabaseHelper;
  * This fragment will allow me to purge the database and allow the ui to change the default
  * behavior how the time is displayed.
  */
-public class SettingPreferenceFragment extends PreferenceFragment
+public class SettingPreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener
 {
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue)
+    {
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        if (newValue instanceof Boolean)
+        {
+            Boolean value = (Boolean)newValue;
+            if (value)
+            {
+                editor.putBoolean("24HRTIME",true);
+            }
+            else
+            {
+                editor.putBoolean("24HRTIME",false);
+            }
+        }
+        return true;
+
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference)
+    {
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        if (preference.getKey().equals(KEY))
+        {
+            editor.putBoolean("PURGE",true);
+        }
+        else if (preference.getKey().equals(KEY_2))
+        {
+            editor.putBoolean("ABOUT",true);
+        }
+
+        return true;
+    }
+
     public interface NoticeDialogListener {
         public void onPurge(boolean isPurged);
     }
@@ -31,85 +72,14 @@ public class SettingPreferenceFragment extends PreferenceFragment
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings);
 
-        /**
-         * NOTE: The following anonymous inner class will purge the existing data.
-         */
-        final Preference purgePreference = findPreference(KEY);
-        purgePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference)
-            {
-                if (preference.getKey().equals(KEY))
-                {
-                    // Instantiate a AlertBuilder to let the user know of this action
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final CheckBoxPreference cboxPrf = (CheckBoxPreference)getPreferenceManager().findPreference(KEY_1);
+        cboxPrf.setOnPreferenceChangeListener(this);
 
-                    builder.setMessage(R.string.purge_db_warning);
-                    builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            DatabaseHelper db = DatabaseHelper.getInstance(getActivity());
-                            db.purgeDB();
-                            NoticeDialogListener activity = (NoticeDialogListener)getActivity();
-                            activity.onPurge(true);
-                        }
-                    });
+        final Preference purge = findPreference(KEY);
+        purge.setOnPreferenceClickListener(this);
 
-                    builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            NoticeDialogListener activity = (NoticeDialogListener)getActivity();
-                            activity.onPurge(false);
-                        }
-                    });
+        final Preference about = findPreference(KEY_2);
+        about.setOnPreferenceClickListener(this);
 
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-                return false;
-            }
-        });
-
-        /**
-         * The following code segment will allow the program to display time in normal time such
-         * as 4:21 PM or it will revert it back to military time.
-         */
-        final CheckBoxPreference timePreference = (CheckBoxPreference)findPreference(KEY_1);
-        timePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference)
-            {
-                if(preference.getKey().equals(KEY_1))
-                {
-                    boolean toggle = timePreference.isChecked();
-                    if (!toggle)
-                    {
-                        Toast.makeText(getActivity(),"Time Unchecked",Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        Toast.makeText(getActivity(),"Time Checked",Toast.LENGTH_SHORT).show();
-                    }
-                }
-                return false;
-            }
-        });
-
-        /**
-         * Code segment is for showing a simple popup that will show the version via a toast !FOR NOW!
-        */
-        final Preference aboutPreference = findPreference(KEY_2);
-        aboutPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference)
-            {
-                if (preference.getKey().equals(KEY_2))
-                {
-                    Toast.makeText(getActivity(),"VERSION 1.0",Toast.LENGTH_LONG).show();
-                }
-                return false;
-            }
-        });
     }
 }
