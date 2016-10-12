@@ -1,5 +1,6 @@
 package com.lokislayer.bloodsugartracker;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.lokislayer.bloodsugartracker.DB.DatabaseHelper;
@@ -37,6 +39,7 @@ public class SettingPreferenceFragment extends PreferenceFragment implements Pre
                 editor.putBoolean("24HRTIME",false);
             }
         }
+        editor.commit();
         return true;
 
     }
@@ -45,7 +48,7 @@ public class SettingPreferenceFragment extends PreferenceFragment implements Pre
     public boolean onPreferenceClick(Preference preference)
     {
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
+        final SharedPreferences.Editor editor = sharedPref.edit();
         if (preference.getKey().equals(KEY))
         {
             // Instantiate a AlertBuilder to let the user know of this action
@@ -56,15 +59,13 @@ public class SettingPreferenceFragment extends PreferenceFragment implements Pre
                 @Override
                 public void onClick(DialogInterface dialog, int which)
                 {
-                    dialog.dismiss();
+                    ((PurgeNotificationListener) activity).isPurged(true);
                 }
             });
 
             builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    // NoticeDialogListener activity = (NoticeDialogListener)getActivity();
-                    // activity.onPurge(false);
                     dialog.dismiss();
                 }
             });
@@ -80,13 +81,12 @@ public class SettingPreferenceFragment extends PreferenceFragment implements Pre
         return true;
     }
 
-    public interface NoticeDialogListener {
-        public void onPurge(boolean isPurged);
-    }
 
     private static final String KEY = "purgeDB";
     private static final String KEY_1 = "change24time";
     private static final String KEY_2 = "aboutBST";
+
+    private Activity activity;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -103,5 +103,16 @@ public class SettingPreferenceFragment extends PreferenceFragment implements Pre
         final Preference about = findPreference(KEY_2);
         about.setOnPreferenceClickListener(this);
 
+    }
+
+    public void onAttach(Activity activity)
+    {
+        super.onAttach(activity);
+        this.activity = activity;
+    }
+
+    public interface PurgeNotificationListener
+    {
+        public void isPurged(boolean value);
     }
 }
