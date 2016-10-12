@@ -23,7 +23,7 @@ import com.lokislayer.bloodsugartracker.Fragments.TimePickerFragment;
 import com.lokislayer.bloodsugartracker.Model.BloodSugarModel;
 
 public class MainActivity extends AppCompatActivity implements
-        View.OnClickListener,DatePickerFragment.DataReturnedListener, TimePickerFragment.TimeEnteredListener, SettingPreferenceFragment.NoticeDialogListener
+        View.OnClickListener,DatePickerFragment.DataReturnedListener, TimePickerFragment.TimeEnteredListener
 {
     private String dateStr,timeStr;
     private TextView minText;
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements
         //I NEED TO CHECK IF THE DB WAS PURGED BECAUSE ALL VALUES WILL BE WIPED CLEAN
         if (id == R.id.action_settings) {
             Intent it = new Intent(this,SettingsActivity.class);
-            startActivity(it);
+            startActivityForResult(it,1);
         }
 
         return super.onOptionsItemSelected(item);
@@ -176,13 +176,14 @@ public class MainActivity extends AppCompatActivity implements
     private void LoadOrUpdateValues()
     {
         // NOTE: Will be set to the actual values when the app launches
-        minText = (TextView)findViewById(R.id.minValue);
-        maxText = (TextView)findViewById(R.id.maxValue);
-        avgText = (TextView)findViewById(R.id.avgValue);
+        minText = (TextView) findViewById(R.id.minValue);
+        maxText = (TextView) findViewById(R.id.maxValue);
+        avgText = (TextView) findViewById(R.id.avgValue);
         // display values
         minText.setText(String.valueOf(db.getMinAmount()));
         avgText.setText(String.valueOf(db.getAvgAmount()));
         maxText.setText(String.valueOf(db.getMaxAmount()));
+
     }
 
     public boolean validation()
@@ -211,9 +212,10 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
-    @Override
-    public void onPurge(boolean isPurged)
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        this.isPurged = isPurged;
+        isPurged = true;
+        db.purgeDB();
+        LoadOrUpdateValues();
     }
 }
