@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.lokislayer.bloodsugartracker.Model.BloodSugarModel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -81,21 +82,27 @@ public class DatabaseHelper extends SQLiteOpenHelper
         }
     }
 
-    private boolean dbExist()
+    private boolean isEmpty()
     {
         SQLiteDatabase db = getReadableDatabase();
-        boolean exist;
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE TYPE = ? AND NAME = ?",
+                new String[] {"table",TABLE_NAME});
+        if (!cursor.moveToFirst())
+        {
+            cursor.close();
+            return false;
+        }
+        int count = cursor.getCount();
+        cursor.close();
+        return count > 0;
 
-        exist = (db == null) ? false : true;
-        db.close();
-        return exist;
     }
 
     public List<BloodSugarModel> getAllResults()
     {
         List<BloodSugarModel> results = new ArrayList<>();
 
-        if (dbExist())
+        if (!isEmpty())
         {
             SQLiteDatabase db = getReadableDatabase();
             String sql = "SELECT * FROM " + TABLE_NAME;
@@ -126,7 +133,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                 results.add(model);
             }while(c.moveToNext());
             avgBloodSugarAmount = totalBloodSugarAmount / results.size();
-            db.close();
+            c.close();
         }
         return results;
     }
@@ -168,12 +175,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
         onUpgrade(db,DB_VERSION,DB_VERSION);
 
         // Since I am keeping List<BloodSugarModel> synced internally
-        for (BloodSugarModel model : results)
-        {
-            results.remove(model);
-        }
-
-        maxBloodSugarAmount = minBloodSugarAmount = totalBloodSugarAmount = 0;
+        results.clear();
+        maxBloodSugarAmount = minBloodSugarAmount = totalBloodSugarAmount = avgBloodSugarAmount = 0;
     }
 
     public int getMaxAmount() { return maxBloodSugarAmount; }
