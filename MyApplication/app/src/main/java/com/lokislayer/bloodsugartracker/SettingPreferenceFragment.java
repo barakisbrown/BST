@@ -48,11 +48,33 @@ public class SettingPreferenceFragment extends PreferenceFragment implements Pre
         SharedPreferences.Editor editor = sharedPref.edit();
         if (preference.getKey().equals(KEY))
         {
-            editor.putBoolean("PURGE",true);
+            // Instantiate a AlertBuilder to let the user know of this action
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setMessage(R.string.purge_db_warning);
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    dialog.dismiss();
+                }
+            });
+
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // NoticeDialogListener activity = (NoticeDialogListener)getActivity();
+                    // activity.onPurge(false);
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
         else if (preference.getKey().equals(KEY_2))
         {
-            editor.putBoolean("ABOUT",true);
+            Toast.makeText(getActivity(),"VERSION 1.0",Toast.LENGTH_LONG).show();
         }
 
         return true;
