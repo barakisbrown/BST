@@ -9,7 +9,7 @@ import java.util.List;
  * Created by barakis on 10/19/16.
  */
 
-class ReadingList
+public class ReadingList
 {
     private static ReadingList mInstance = null;
     private List<BloodSugarModel> results = null;
