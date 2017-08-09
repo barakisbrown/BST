@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements
     private DatabaseHelper db;
     private BloodSugarModel model;
     private int amountBlood;
-    private boolean isPurged = false;
 
     // NEED THESE TWO FRAGMENTS SO THAT I CAN ACCESS THEM THROUGHOUT THE APP
     DatePickerFragment dateFragment;
@@ -99,6 +98,11 @@ public class MainActivity extends AppCompatActivity implements
         if (id == R.id.action_settings) {
             Intent it = new Intent(this,SettingsActivity.class);
             startActivityForResult(it,1);
+        }
+        else if (id == R.id.debug_settings)
+        {
+            Intent it = new Intent(this,DebugSettingsActivity.class);
+            startActivityForResult(it,2);
         }
 
         return super.onOptionsItemSelected(item);
@@ -214,8 +218,15 @@ public class MainActivity extends AppCompatActivity implements
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        isPurged = true;
-        db.purgeDB();
-        LoadOrUpdateValues();
+        if (requestCode == 1)
+        {
+            if ((resultCode == RESULT_OK)&&(data != null)) {
+                db.purgeDB();
+            }
+            LoadOrUpdateValues();
+        } else if (requestCode == 2)
+        {
+            LoadOrUpdateValues();
+        }
     }
 }

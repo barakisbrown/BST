@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <PreferenceCategory android:title="@string/debug_options">
+        <Preference
+            android:title="NUMBER OF ROWS"
+            android:key="rowCountDB"
+            android:summary="How many rows exist in the db?" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

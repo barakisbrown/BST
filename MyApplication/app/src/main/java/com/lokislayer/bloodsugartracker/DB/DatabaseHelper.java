@@ -82,19 +82,24 @@ public class DatabaseHelper extends SQLiteOpenHelper
         }
     }
 
+    /**
+     * Determines if the Sqlite Database exist or not.
+     * @return true if database does exist. False it does not exist
+     */
     private boolean isEmpty()
     {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE TYPE = ? AND NAME = ?",
-                new String[] {"table",TABLE_NAME});
-        if (!cursor.moveToFirst())
-        {
+        String query = "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + TABLE_NAME + "'";
+        Cursor cursor = db.rawQuery(query,null);
+
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                cursor.close();
+                return true;
+            }
             cursor.close();
-            return false;
         }
-        int count = cursor.getCount();
-        cursor.close();
-        return count > 0;
+        return false;
 
     }
 

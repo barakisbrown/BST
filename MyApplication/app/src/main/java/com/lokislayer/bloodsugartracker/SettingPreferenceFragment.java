@@ -21,6 +21,30 @@ import com.lokislayer.bloodsugartracker.DB.DatabaseHelper;
  */
 public class SettingPreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener
 {
+    private static final String KEY = "purgeDB";
+    private static final String KEY_1 = "change24time";
+    private static final String KEY_2 = "aboutBST";
+
+    private Activity activity;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        addPreferencesFromResource(R.xml.settings);
+
+        final CheckBoxPreference cboxPrf = (CheckBoxPreference)getPreferenceManager().findPreference(KEY_1);
+        cboxPrf.setOnPreferenceChangeListener(this);
+
+        final Preference purge = findPreference(KEY);
+        purge.setOnPreferenceClickListener(this);
+
+        final Preference about = findPreference(KEY_2);
+        about.setOnPreferenceClickListener(this);
+
+
+    }
+
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue)
     {
@@ -39,7 +63,7 @@ public class SettingPreferenceFragment extends PreferenceFragment implements Pre
                 editor.putBoolean("24HRTIME",false);
             }
         }
-        editor.commit();
+        editor.apply();
         return true;
 
     }
@@ -48,7 +72,7 @@ public class SettingPreferenceFragment extends PreferenceFragment implements Pre
     public boolean onPreferenceClick(Preference preference)
     {
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = sharedPref.edit();
+
         if (preference.getKey().equals(KEY))
         {
             // Instantiate a AlertBuilder to let the user know of this action
@@ -79,30 +103,6 @@ public class SettingPreferenceFragment extends PreferenceFragment implements Pre
         }
 
         return true;
-    }
-
-
-    private static final String KEY = "purgeDB";
-    private static final String KEY_1 = "change24time";
-    private static final String KEY_2 = "aboutBST";
-
-    private Activity activity;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.settings);
-
-        final CheckBoxPreference cboxPrf = (CheckBoxPreference)getPreferenceManager().findPreference(KEY_1);
-        cboxPrf.setOnPreferenceChangeListener(this);
-
-        final Preference purge = findPreference(KEY);
-        purge.setOnPreferenceClickListener(this);
-
-        final Preference about = findPreference(KEY_2);
-        about.setOnPreferenceClickListener(this);
-
     }
 
     public void onAttach(Activity activity)

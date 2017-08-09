@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.lokislayer.bloodsugartracker.DB.DatabaseHelper;
 
 /**
  * Activity Class that will create the SettingsFragment that I will use to power my settings.
